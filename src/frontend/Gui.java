@@ -90,7 +90,7 @@ public class Gui extends Application {
 	 */
 	public static void telaInicial() throws IOException {
 		//carrega do fxml correspondente
-		FXMLLoader loader = new FXMLLoader(new File("src/frontend/inicial.fxml").toURI().toURL());
+		FXMLLoader loader = new FXMLLoader(Gui.class.getResource("inicial.fxml"));
 		Gui.root = loader.load();
 		//cria a cena e seta a mesma
 		Scene S = new Scene(root);
@@ -117,7 +117,7 @@ public class Gui extends Application {
 	 */
 	public static void telaCadastro() throws IOException {
 		//carrega o fxml correspondente
-		FXMLLoader loader = new FXMLLoader(new File("src/frontend/cadastro.fxml").toURI().toURL());
+		FXMLLoader loader = new FXMLLoader(Gui.class.getResource("cadastro.fxml"));
 		Gui.root = loader.load();
 		//carrega nova cena
 		Scene S = new Scene(root);
@@ -215,16 +215,12 @@ public class Gui extends Application {
 		Gui.numeropaginas = BDConexaoClass.getSizePets() / 4;
 		
 		//carrega o fxml correspondente
-		FXMLLoader loader = null;
-		try {
-			loader = new FXMLLoader(new File("src/frontend/disponiveis.fxml").toURI().toURL());
-		} catch (MalformedURLException e) {
-			System.out.println("Erro na URL do FXML");
-		}
+		FXMLLoader loader = new FXMLLoader(Gui.class.getResource("disponiveis.fxml"));
 		try {
 			Gui.root = loader.load();
 		} catch (IOException e) {
 			System.out.println("Erro no carregamento do FXML");
+			e.printStackTrace();
 		}
 		
 		((Text)Gui.getComp("npag")).setText("Pagina " + (Gui.paginaatual+1));
@@ -235,6 +231,7 @@ public class Gui extends Application {
 				Gui.pet[i] = BDConexaoClass.retornaPet(((Gui.paginaatual)*4)+(i+1)-1);
 			} catch (NumberFormatException e) {
 				System.out.println("Erro no retorno do Pet do BD");
+				e.printStackTrace();
 			}
 		}
 		
@@ -260,16 +257,12 @@ public class Gui extends Application {
 	 */
 	public static void telaInfoPet() {
 		//carrega o fxml correspondente;
-		FXMLLoader loader = null;
-		try {
-			loader = new FXMLLoader(new File("src/frontend/infopet.fxml").toURI().toURL());
-		} catch (MalformedURLException e) {
-			System.out.println("Erro na URL do FXML");
-		}
+		FXMLLoader loader = new FXMLLoader(Gui.class.getResource("infopet.fxml"));
 		try {
 			Gui.root = loader.load();
 		} catch (IOException e) {
 			System.out.println("Erro no carregamento do FXML");
+			e.printStackTrace();
 		}
 		
 		//Setando infos do pet
@@ -298,16 +291,12 @@ public class Gui extends Application {
 	 */
 	public static void telaAnunciar() {
 		//carrega o fxml correspondente
-		FXMLLoader loader = null;
-		try {
-			loader = new FXMLLoader(new File("src/frontend/anunciar.fxml").toURI().toURL());
-		} catch (MalformedURLException e) {
-			System.out.println("Erro na URL do FXML");
-		}
+		FXMLLoader loader = new FXMLLoader(Gui.class.getResource("anunciar.fxml"));
 		try {
 			Gui.root = loader.load();
 		} catch (IOException e) {
 			System.out.println("Erro no carregamento do FXML");
+			e.printStackTrace();
 		}
 		//carrega a cena
 		Scene S = new Scene(root);
@@ -347,16 +336,12 @@ public class Gui extends Application {
 	 */
 	public static void telaChat() {
 		//carrega o fxml correspondente
-		FXMLLoader loader = null;
-		try {
-			loader = new FXMLLoader(new File("src/frontend/chat.fxml").toURI().toURL());
-		} catch (MalformedURLException e) {
-			System.out.println("Erro na URL do FXML");
-		}
+		FXMLLoader loader = new FXMLLoader(Gui.class.getResource("chat.fxml"));
 		try {
 			Gui.root = loader.load();
 		} catch (IOException e) {
 			System.out.println("Erro no carregamento do FXML");
+			e.printStackTrace();
 		}
 		//carrega os contatos do usuario logado
 		Gui.contatos = BDConexaoClass.listaContatos(Gui.User);
@@ -403,16 +388,12 @@ public class Gui extends Application {
 	 */
 	public static void iniciarChat(){
 		//carrega o fxml correspondente
-		FXMLLoader loader = null;
-		try {
-			loader = new FXMLLoader(new File("src/frontend/conversa.fxml").toURI().toURL());
-		} catch (MalformedURLException e) {
-			System.out.println("Erro na URL do FXML");
-		}
+		FXMLLoader loader = new FXMLLoader(Gui.class.getResource("conversa.fxml"));
 		try {
 			Gui.root = loader.load();
 		} catch (IOException e) {
 			System.out.println("Erro no carregamento do FXML");
+			e.printStackTrace();
 		}
 		
 		//se ainda nao existe um chat entre o usuario e seu contato, entao cria-se um;
@@ -518,16 +499,12 @@ public class Gui extends Application {
 	 */
 	public static void telaAdotou() {
 		//carrega o fxml correspondente
-		FXMLLoader loader = null;
-		try {
-			loader = new FXMLLoader(new File("src/frontend/adotou.fxml").toURI().toURL());
-		} catch (MalformedURLException e) {
-			System.out.println("Erro na URL do FXML");
-		}
+		FXMLLoader loader = new FXMLLoader(Gui.class.getResource("adotou.fxml"));
 		try {
 			Gui.root = loader.load();
 		} catch (IOException e) {
 			System.out.println("Erro no carregamento do FXML");
+			e.printStackTrace();
 		}
 		
 		((Label)getComp("texto")).setText(((Label)getComp("texto")).getText() + Gui.petCorrente.getNome() + " foi adotado(a)!");
@@ -544,16 +521,12 @@ public class Gui extends Application {
 	 * Metodo que imprime a tela de porque adotar;
 	 */
 	public static void telaPorqueAdotar() {
-		FXMLLoader loader = null;
-		try {
-			loader = new FXMLLoader(new File("src/frontend/porqueAdotar.fxml").toURI().toURL());
-		} catch (MalformedURLException e) {
-			System.out.println("Erro na URL do FXML");
-		}
+		FXMLLoader loader = new FXMLLoader(Gui.class.getResource("porqueAdotar.fxml"));
 		try {
 			Gui.root = loader.load();
 		} catch (IOException e) {
 			System.out.println("Erro no carregamento do FXML");
+			e.printStackTrace();
 		}
 		Scene S = new Scene(root);
 		Gui.Stg.setScene(S);
@@ -572,6 +545,7 @@ public class Gui extends Application {
 			Gui.telaInicial();
 		} catch (IOException e) {
 			System.out.println("Erro no carregamento do FXML");
+			e.printStackTrace();
 		}
     }
 	
