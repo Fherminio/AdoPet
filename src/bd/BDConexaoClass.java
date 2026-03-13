@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Properties;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -13,6 +14,7 @@ import java.util.Vector;
 
 import javax.imageio.ImageIO;
 import backend.Usuario;
+import backend.SecurityUtils;
 import frontend.Gui;
 import javafx.embed.swing.SwingFXUtils;
 import backend.Pair;
@@ -34,10 +36,21 @@ public class BDConexaoClass{
      */
 
     public static Connection BDConexao(){
+        Properties props = new Properties();
+        try (InputStream input = BDConexaoClass.class.getResourceAsStream("/db.properties")) {
+            if (input == null) {
+                System.out.println("Sorry, unable to find db.properties");
+                return null;
+            }
+            props.load(input);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
 
-       String con = "jdbc:mysql://127.0.0.1:3306/adopet";
-       String server_user = "adopet";
-       String server_pass = "@adopet33";
+       String con = props.getProperty("db.url");
+       String server_user = props.getProperty("db.user");
+       String server_pass = props.getProperty("db.password");
 
        Connection connect = null;
        try {
@@ -112,7 +125,8 @@ public class BDConexaoClass{
         try (Connection con = BDConexao();
              PreparedStatement ps = con.prepareStatement(insert)) {
 			ps.setString(1, user.getUserName());
-	        ps.setString(2, user.getSenha());
+            String hashedPass = SecurityUtils.hashPassword(user.getSenha());
+	        ps.setString(2, hashedPass);
 	        ps.setString(3, user.getNome());
 	        ps.setString(4, user.getCpf());
 	        ps.setString(5, user.getCidade());
@@ -137,7 +151,7 @@ public class BDConexaoClass{
             try (ResultSet rs = ps.executeQuery()) {
                 while(rs.next()){
                     String  getpass = rs.getString(3);
-                    if(user.getSenha().equals(getpass)){
+                    if(SecurityUtils.checkPassword(user.getSenha(), getpass)){
                         //Autoriza login, pois o usuario esta no BD;
                         return true;
                     }
@@ -669,6 +683,46 @@ public class BDConexaoClass{
 			return null;
 		}
         return p;
+    }
+
+    /**
+     * retornaPetsDisponiveis - Retorna uma lista de Pets
+     * @param offset - O deslocamento no Banco de Dados
+     * @param limit - O numero maximo de Pets a retornar
+     * @return - Um array de Pets (pode conter elementos nulos)
+     */
+    public static Pet[] retornaPetsDisponiveis(int offset, int limit) {
+        String select = "SELECT * FROM pets LIMIT ?,?";
+        Pet[] pets = new Pet[limit];
+        try (Connection con = BDConexao();
+             PreparedStatement ps = con.prepareStatement(select)) {
+            ps.setInt(1, offset);
+            ps.setInt(2, limit);
+            try (ResultSet rs = ps.executeQuery()) {
+                int i = 0;
+                while (rs.next() && i < limit) {
+                    Pet p = new Pet();
+                    p.setPetID(rs.getInt(1));
+                    p.setEspecie(rs.getString(2));
+                    p.setNome(rs.getString(3));
+                    p.setSexo(rs.getString(4));
+                    p.setDetalhes(rs.getString(5));
+                    p.setAnuncianteID(rs.getInt(6));
+                    p.setAnunciante(retornaUsuario((int) p.getAnuncianteID()));
+
+                    InputStream in = rs.getBlob(7).getBinaryStream();
+                    BufferedImage image = ImageIO.read(in);
+                    p.setIcone(SwingFXUtils.toFXImage(image, null));
+
+                    pets[i] = p;
+                    i++;
+                }
+            }
+        } catch (SQLException | IOException e) {
+            System.out.println("Erro retornaPetsDisponiveis");
+            e.printStackTrace();
+        }
+        return pets;
     }
 
 }

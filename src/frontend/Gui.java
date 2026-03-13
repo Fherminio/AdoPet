@@ -226,9 +226,11 @@ public class Gui extends Application {
 		((Text)Gui.getComp("npag")).setText("Pagina " + (Gui.paginaatual+1));
 		
 		//PEGA OBJETO PET DO BD E SETAR NO GUI.PET[].
+		int offset = Gui.paginaatual * 4;
+		Pet[] fetchedPets = BDConexaoClass.retornaPetsDisponiveis(offset, 4);
 		for(int i=0; i<4; i++) {
 			try {
-				Gui.pet[i] = BDConexaoClass.retornaPet(((Gui.paginaatual)*4)+(i+1)-1);
+				Gui.pet[i] = fetchedPets[i];
 			} catch (NumberFormatException e) {
 				System.out.println("Erro no retorno do Pet do BD");
 				e.printStackTrace();
